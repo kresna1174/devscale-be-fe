@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  invoice Invoice[]
+}
+
+model Product {
+  id String @id @default(uuid())
+  productName String
+  qty Int
+  price Int
+  invoideDetail InvoiceDetail[]
+}
+
+model Invoice {
+  id String @id @default(uuid())
+  date DateTime
+  total Float
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceDetail   InvoiceDetail[]
+}
+
+model InvoiceDetail {
+  id String @id @default(uuid())
+  productId String 
+  product Product @relation(fields: [productId], references: [id])
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  qty Int
+  total Int
+}
+
